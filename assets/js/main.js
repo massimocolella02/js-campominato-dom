@@ -1,81 +1,65 @@
-//variabili
-let difficoltà = parseInt(document.getElementById('difficult').value);
+const main = document.querySelector('main');
 let box = document.createElement('div');
-let grid = document.querySelector('.grid');
 
+const button = document.querySelector('#button').addEventListener('click', gioca);
+function gioca(){
+    let difficoltà = parseInt(document.querySelector('.select').value);
 
-//Al click compare il gioco in base alle difficoltà
-function play(){
-    difficoltà = parseInt(document.getElementById('difficult').value);
+    //Refresh div nel grid
+    main.innerHTML=''
 
-    switch(difficoltà) {
-        case 100:
-            game('box-easy');
-            break;
-        case 81:
-            game('box-medium');
-            break;
-        case 49:
-            game('box-hard');
-        default:
-    }
+    //creazione box nel grid in base alla difficoltà
+    if( difficoltà == 0 ){
+        alert('Specificare una difficoltà')
+    }else{
+        let grid = document.createElement('div');
+        grid.classList.add('grid');
+        main.appendChild(grid)
 
-}
+        for(let b=1; b <= difficoltà; b++){
+            box = document.createElement('div');
+            box.classList.add('box');
+            box.innerHTML+= b;
+            document.querySelector('.grid').appendChild(box);
+    
+            switch( difficoltà ){
+                case 100:
+                    box.classList.add('easy');
+                    break;
+                case 81:
+                    box.classList.add('medium');
+                    break;
+                case 49: 
+                    box.classList.add('hard');
+                    break;
+            }
 
-/*--------------------------------------------Funzioni------------------------------------------------------*/
-function game(x){
-    difficoltà = parseInt(document.getElementById('difficult').value);
-    box = document.createElement('div');
-    grid = document.querySelector('.grid');
+            //Al click su un box, questo cambia colore
+            box.addEventListener('click', function(){
+                if( arrayBombe.includes(b) ){
+                    this.classList.add('box-red')
+                    setTimeout( function(){
+                        alert('Game Over!! Hai perso')
+                    }, 200)
+                }else{
+                    this.classList.add('box-clicked')
+                    console.log(b)
+                }
+            })
+        }
 
-    //Conto dei click sulle i
-    let click = 0;
-
-    //Refresh HTML
-    while(grid.firstChild){
-        grid.removeChild(grid.firstChild);
-    }
-
-    //Creazione numero random e inserimento in array
-    let arrayBomb = [];
-    let randomNumber = Math.floor(Math.random() * difficoltà) + 1;
-
-    while(arrayBomb.length < 16){
-        randomNumber = Math.floor(Math.random() * difficoltà) + 1;
-
-        if( !arrayBomb.includes(randomNumber) ){
-            arrayBomb.push(randomNumber);
+        //Generazione 16 numeri ( bombe ) random
+        let arrayBombe = [];
+        for(let i=0; arrayBombe.length < 16; i++){
+            let bomba = randomNumber(difficoltà);
+            if( !arrayBombe.includes(bomba) ){
+                arrayBombe.push(bomba)
+            }
         }
     }
-
-    //Creazione div in base alla difficoltà
-    for( let i=1; i <= difficoltà; i++){
-        box = document.createElement('div');
-        box.classList.add('box');
-        box.classList.add(x);
-        grid.appendChild(box);
-        box.innerHTML= i
-
-        //Click sui box
-        box.addEventListener('click', function(){
-
-        randomNumber = Math.floor(Math.random() * difficoltà) + 1;
-
-            if( !arrayBomb.includes(randomNumber) ){
-                this.classList.add('bg-azzurro');
-                click += 1
-                console.log(i)
-            }else{
-                this.classList.add('bg-rosso');
-                alert(`Hai perso!! Hai fatto ${click} punti`);
-                //Refresh HTML
-                while(grid.firstChild){
-                grid.removeChild(grid.firstChild);
-                }
-            }
-        })
-    }
     
-    console.log(arrayBomb)
-    return box
+}
+
+function randomNumber(x){
+    return Math.floor(Math.random() * x) + 1;
 }
